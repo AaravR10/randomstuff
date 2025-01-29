@@ -2,6 +2,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const gravity = 0.5;
+const jumpPower = -10;
 const player1 = { x: 50, y: 550, width: 20, height: 20, color: 'red', speed: 5, vy: 0, onGround: false };
 const player2 = { x: 750, y: 550, width: 20, height: 20, color: 'blue', speed: 5, vy: 0, onGround: false };
 
@@ -35,12 +36,12 @@ function update() {
     applyGravity(player2);
 
     // Player 1 movement
-    if (keys.w && player1.onGround) player1.vy = -10;
+    if (keys.w && player1.onGround) player1.vy = jumpPower;
     if (keys.a && player1.x > 0) player1.x -= player1.speed;
     if (keys.d && player1.x < canvas.width - player1.width) player1.x += player1.speed;
 
     // Player 2 movement
-    if (keys.ArrowUp && player2.onGround) player2.vy = -10;
+    if (keys.ArrowUp && player2.onGround) player2.vy = jumpPower;
     if (keys.ArrowLeft && player2.x > 0) player2.x -= player2.speed;
     if (keys.ArrowRight && player2.x < canvas.width - player2.width) player2.x += player2.speed;
 
