@@ -18,8 +18,8 @@ body {
     width: 300px;
     height: 300px;
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
     border: 2px solid #000;
     margin-bottom: 20px;
 }
@@ -35,13 +35,15 @@ body {
     gap: 10px;
 }
 
-.shape {
+#random-block {
     display: flex;
     gap: 2px;
     flex-wrap: wrap;
+    width: 60px;  /* Adjusted size to fit multiple blocks */
+    height: 60px; /* Adjusted size to fit multiple blocks */
 }
 
-.shape > .block {
+#random-block > .block {
     width: 30px;
     height: 30px;
     background-color: #ff0000;
