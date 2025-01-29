@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 
 const gravity = 0.5;
 const jumpPower = -10;
+const jumpHeight = -jumpPower / gravity * 2; // Estimated jump height
 const player1 = { x: 50, y: 550, width: 20, height: 20, color: 'red', speed: 5, vy: 0, onGround: false };
 const player2 = { x: 750, y: 550, width: 20, height: 20, color: 'blue', speed: 5, vy: 0, onGround: false };
 
@@ -97,7 +98,7 @@ function nextLevel() {
     } else {
         resetPlayer(player1);
         resetPlayer(player2);
-        generateRandomObstacles();
+        generateValidObstacles();
     }
 }
 
@@ -112,18 +113,30 @@ function declareWinner() {
     document.location.reload();
 }
 
-function generateRandomObstacles() {
+function generateValidObstacles() {
     obstacles = [];
     const obstacleCount = Math.floor(Math.random() * 5) + 3;
+    let lastX = 0;
+    let lastY = canvas.height - 20;
+
     for (let i = 0; i < obstacleCount; i++) {
+        let x, y;
+        do {
+            x = Math.random() * (canvas.width - 50);
+            y = Math.random() * (canvas.height - 100);
+        } while (Math.abs(x - lastX) > jumpHeight || Math.abs(y - lastY) > jumpHeight);
+
         const obstacle = {
-            x: Math.random() * (canvas.width - 50),
-            y: Math.random() * (canvas.height - 100),
+            x: x,
+            y: y,
             width: 50,
             height: 10,
             color: 'black'
         };
+
         obstacles.push(obstacle);
+        lastX = x;
+        lastY = y;
     }
 }
 
@@ -154,5 +167,5 @@ function draw() {
 }
 
 // Initialize the game
-generateRandomObstacles();
+generateValidObstacles();
 update();
