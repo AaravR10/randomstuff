@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const gravity = 0.5;
-const player1 = { x: 50, y: 550, width: 20, height: 20, color: 'red', speed: 5, vy: 0 };
-const player2 = { x: 750, y: 550, width: 20, height: 20, color: 'blue', speed: 5, vy: 0 };
+const player1 = { x: 50, y: 550, width: 20, height: 20, color: 'red', speed: 5, vy: 0, onGround: false };
+const player2 = { x: 750, y: 550, width: 20, height: 20, color: 'blue', speed: 5, vy: 0, onGround: false };
 
 const endPoint = { x: 380, y: 10, width: 20, height: 20 };
 
@@ -31,17 +31,16 @@ document.addEventListener('keyup', (e) => {
 });
 
 function update() {
-    // Gravity and jumping
     applyGravity(player1);
     applyGravity(player2);
 
     // Player 1 movement
-    if (keys.w && isOnGround(player1)) player1.vy = -10;
+    if (keys.w && player1.onGround) player1.vy = -10;
     if (keys.a && player1.x > 0) player1.x -= player1.speed;
     if (keys.d && player1.x < canvas.width - player1.width) player1.x += player1.speed;
 
     // Player 2 movement
-    if (keys.ArrowUp && isOnGround(player2)) player2.vy = -10;
+    if (keys.ArrowUp && player2.onGround) player2.vy = -10;
     if (keys.ArrowLeft && player2.x > 0) player2.x -= player2.speed;
     if (keys.ArrowRight && player2.x < canvas.width - player2.width) player2.x += player2.speed;
 
@@ -57,8 +56,8 @@ function update() {
 
     // Check for collisions with obstacles
     obstacles.forEach(obstacle => {
-        if (checkCollision(player1, obstacle)) resetPlayer(player1);
-        if (checkCollision(player2, obstacle)) resetPlayer(player2);
+        handleObstacleCollision(player1, obstacle);
+        handleObstacleCollision(player2, obstacle);
     });
 
     draw();
@@ -66,17 +65,15 @@ function update() {
 }
 
 function applyGravity(player) {
-    if (player.y < canvas.height - player.height) {
-        player.vy += gravity;
-        player.y += player.vy;
-    } else {
-        player.vy = 0;
+    player.vy += gravity;
+    player.y += player.vy;
+    if (player.y + player.height >= canvas.height) {
         player.y = canvas.height - player.height;
+        player.vy = 0;
+        player.onGround = true;
+    } else {
+        player.onGround = false;
     }
-}
-
-function isOnGround(player) {
-    return player.y >= canvas.height - player.height;
 }
 
 function checkCollision(rect1, rect2) {
@@ -97,7 +94,6 @@ function nextLevel() {
     if (currentLevel > 10) {
         declareWinner();
     } else {
-        // Reset players and end point positions for the next level
         resetPlayer(player1);
         resetPlayer(player2);
         generateRandomObstacles();
@@ -117,16 +113,24 @@ function declareWinner() {
 
 function generateRandomObstacles() {
     obstacles = [];
-    const obstacleCount = Math.floor(Math.random() * 10) + 5; // Random number of obstacles between 5 and 15
+    const obstacleCount = Math.floor(Math.random() * 5) + 3;
     for (let i = 0; i < obstacleCount; i++) {
         const obstacle = {
-            x: Math.random() * (canvas.width - 20),
-            y: Math.random() * (canvas.height - 20),
-            width: 20,
+            x: Math.random() * (canvas.width - 50),
+            y: Math.random() * (canvas.height - 100),
+            width: 50,
             height: 10,
             color: 'black'
         };
         obstacles.push(obstacle);
+    }
+}
+
+function handleObstacleCollision(player, obstacle) {
+    if (player.vy > 0 && checkCollision(player, obstacle)) {
+        player.y = obstacle.y - player.height;
+        player.vy = 0;
+        player.onGround = true;
     }
 }
 
