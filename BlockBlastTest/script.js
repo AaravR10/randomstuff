@@ -1,12 +1,17 @@
 // script.js
 const board = document.getElementById('board');
-const shapes = document.querySelectorAll('.shape');
+const randomBlock = document.getElementById('random-block');
 let points = 0;
 
-shapes.forEach(shape => {
-    shape.addEventListener('dragstart', dragStart);
-    shape.addEventListener('dragend', dragEnd);
-});
+// Create board grid
+for (let i = 0; i < 100; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    board.appendChild(cell);
+}
+
+randomBlock.addEventListener('dragstart', dragStart);
+randomBlock.addEventListener('dragend', dragEnd);
 
 board.addEventListener('dragover', dragOver);
 board.addEventListener('dragenter', dragEnter);
@@ -43,8 +48,12 @@ function drop(e) {
     const shape = document.createElement('div');
     shape.classList.add('shape');
     shape.style.backgroundColor = getRandomColor();
-    e.target.appendChild(shape);
-    updateScore();
+
+    if (!e.target.hasChildNodes() && e.target.className === 'cell') {
+        e.target.appendChild(shape);
+        updateScore();
+        generateRandomBlock();
+    }
 }
 
 function getRandomColor() {
@@ -60,3 +69,9 @@ function updateScore() {
     points += 10;
     document.getElementById('points').innerText = points;
 }
+
+function generateRandomBlock() {
+    randomBlock.style.backgroundColor = getRandomColor();
+}
+
+generateRandomBlock();
