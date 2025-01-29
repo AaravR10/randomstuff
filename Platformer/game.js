@@ -1,16 +1,11 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const player1 = { x: 50, y: 550, width: 20, height: 20, color: 'red', speed: 5 };
-const player2 = { x: 750, y: 550, width: 20, height: 20, color: 'blue', speed: 5 };
+const gravity = 0.5;
+const player1 = { x: 50, y: 550, width: 20, height: 20, color: 'red', speed: 5, vy: 0 };
+const player2 = { x: 750, y: 550, width: 20, height: 20, color: 'blue', speed: 5, vy: 0 };
 
 const endPoint = { x: 380, y: 10, width: 20, height: 20 };
-
-const spikes = [
-    { x: 100, y: 500, width: 20, height: 10 },
-    { x: 200, y: 450, width: 20, height: 10 },
-    { x: 300, y: 400, width: 20, height: 10 },
-];
 
 let player1Score = 0;
 let player2Score = 0;
@@ -36,16 +31,18 @@ document.addEventListener('keyup', (e) => {
 });
 
 function update() {
+    // Gravity and jumping
+    applyGravity(player1);
+    applyGravity(player2);
+
     // Player 1 movement
-    if (keys.w && player1.y > 0) player1.y -= player1.speed;
+    if (keys.w && isOnGround(player1)) player1.vy = -10;
     if (keys.a && player1.x > 0) player1.x -= player1.speed;
-    if (keys.s && player1.y < canvas.height - player1.height) player1.y += player1.speed;
     if (keys.d && player1.x < canvas.width - player1.width) player1.x += player1.speed;
 
     // Player 2 movement
-    if (keys.ArrowUp && player2.y > 0) player2.y -= player2.speed;
+    if (keys.ArrowUp && isOnGround(player2)) player2.vy = -10;
     if (keys.ArrowLeft && player2.x > 0) player2.x -= player2.speed;
-    if (keys.ArrowDown && player2.y < canvas.height - player2.height) player2.y += player2.speed;
     if (keys.ArrowRight && player2.x < canvas.width - player2.width) player2.x += player2.speed;
 
     // Check if players reached the end point
@@ -58,14 +55,28 @@ function update() {
         nextLevel();
     }
 
-    // Check for collisions with spikes
-    spikes.forEach(spike => {
-        if (checkCollision(player1, spike)) resetPlayer(player1);
-        if (checkCollision(player2, spike)) resetPlayer(player2);
+    // Check for collisions with obstacles
+    obstacles.forEach(obstacle => {
+        if (checkCollision(player1, obstacle)) resetPlayer(player1);
+        if (checkCollision(player2, obstacle)) resetPlayer(player2);
     });
 
     draw();
     requestAnimationFrame(update);
+}
+
+function applyGravity(player) {
+    if (player.y < canvas.height - player.height) {
+        player.vy += gravity;
+        player.y += player.vy;
+    } else {
+        player.vy = 0;
+        player.y = canvas.height - player.height;
+    }
+}
+
+function isOnGround(player) {
+    return player.y >= canvas.height - player.height;
 }
 
 function checkCollision(rect1, rect2) {
@@ -78,6 +89,7 @@ function checkCollision(rect1, rect2) {
 function resetPlayer(player) {
     player.x = (player === player1) ? 50 : 750;
     player.y = 550;
+    player.vy = 0;
 }
 
 function nextLevel() {
@@ -88,6 +100,7 @@ function nextLevel() {
         // Reset players and end point positions for the next level
         resetPlayer(player1);
         resetPlayer(player2);
+        generateRandomObstacles();
     }
 }
 
@@ -100,6 +113,21 @@ function declareWinner() {
     }
     alert(winner);
     document.location.reload();
+}
+
+function generateRandomObstacles() {
+    obstacles = [];
+    const obstacleCount = Math.floor(Math.random() * 10) + 5; // Random number of obstacles between 5 and 15
+    for (let i = 0; i < obstacleCount; i++) {
+        const obstacle = {
+            x: Math.random() * (canvas.width - 20),
+            y: Math.random() * (canvas.height - 20),
+            width: 20,
+            height: 10,
+            color: 'black'
+        };
+        obstacles.push(obstacle);
+    }
 }
 
 function draw() {
@@ -115,9 +143,11 @@ function draw() {
     ctx.fillRect(endPoint.x, endPoint.y, endPoint.width, endPoint.height);
 
     ctx.fillStyle = 'black';
-    spikes.forEach(spike => {
-        ctx.fillRect(spike.x, spike.y, spike.width, spike.height);
+    obstacles.forEach(obstacle => {
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
 }
 
+// Initialize the game
+generateRandomObstacles();
 update();
