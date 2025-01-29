@@ -74,7 +74,7 @@ function updateScore() {
 
 function generateRandomBlock() {
     const shapes = [
-        // Define different shapes as arrays of cell indices
+        // Define different shapes as arrays of relative cell indices
         [0, 1, 10, 11], // Square
         [0, 1, 2, 3], // Line
         [0, 1, 2, 12], // T-shape
