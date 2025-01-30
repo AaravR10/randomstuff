@@ -1,9 +1,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const gravity = 1; // Increased gravity speed
-const player1 = { x: 50, y: 580, width: 20, height: 20, color: 'blue', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: 'right' };
-const player2 = { x: 730, y: 580, width: 20, height: 20, color: 'red', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: 'left' };
+const gravity = 2; // Increased gravity speed
+const player1 = { x: 50, y: canvas.height - 20, width: 20, height: 20, color: 'blue', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: 'right' };
+const player2 = { x: 730, y: canvas.height - 20, width: 20, height: 20, color: 'red', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: 'left' };
 const bullets = [];
 const powerUps = [];
 const obstacles = [];
@@ -29,11 +29,11 @@ function createPowerUp() {
     const colors = ['green', 'yellow', 'purple'];
     const type = types[Math.floor(Math.random() * types.length)];
     const color = colors[types.indexOf(type)];
-    powerUps.push({ x: Math.random() * (canvas.width - 20), y: canvas.height - (Math.random() * 100 + 50), width: 20, height: 20, color, type, spawnTime: Date.now() });
+    powerUps.push({ x: Math.random() * (canvas.width - 20), y: canvas.height - (Math.random() * 50 + 20), width: 20, height: 20, color, type, spawnTime: Date.now() });
 }
 
 function createObstacle() {
-    obstacles.push({ x: Math.random() * (canvas.width - 30), y: canvas.height - (Math.random() * 100 + 50), width: 30, height: 30, color: 'gray' });
+    obstacles.push({ x: Math.random() * (canvas.width - 30), y: canvas.height - (Math.random() * 50 + 20), width: 30, height: 30, color: 'gray' });
 }
 
 function applyGravity(player) {
