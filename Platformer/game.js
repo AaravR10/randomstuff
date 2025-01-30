@@ -145,6 +145,16 @@ function handleObstacleCollision(player, obstacle) {
         player.y = obstacle.y - player.height;
         player.vy = 0;
         player.onGround = true;
+    } else if (player.vy < 0 && checkCollision(player, obstacle)) {
+        player.y = obstacle.y + obstacle.height;
+        player.vy = 0;
+    }
+}
+function handleObstacleCollision(player, obstacle) {
+    if (player.vy > 0 && checkCollision(player, obstacle)) {
+        player.y = obstacle.y - player.height;
+        player.vy = 0;
+        player.onGround = true;
     }
 }
 
