@@ -19,7 +19,7 @@ function drawRect(obj) {
 
 function createBullet(player) {
     if (player.reloadTime <= 0) {
-        bullets.push({ x: player.x + player.width / 2, y: player.y, width: 5, height: 5, color: player.color, direction: player.bulletDirection });
+        bullets.push({ x: player.x + player.width / 2, y: player.y + player.height / 2, width: 5, height: 5, color: player.color, direction: player.bulletDirection });
         player.reloadTime = 20; // Example reload time
     }
 }
