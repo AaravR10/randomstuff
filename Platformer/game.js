@@ -89,6 +89,7 @@ function resetPlayer(player) {
     player.x = (player === player1) ? 50 : 750;
     player.y = 550;
     player.vy = 0;
+    player.onGround = true;
 }
 
 function nextLevel() {
@@ -122,9 +123,9 @@ function generateValidObstacles() {
     for (let i = 0; i < obstacleCount; i++) {
         let x, y;
         do {
-            x = Math.random() * (canvas.width - 50);
-            y = Math.random() * (canvas.height - 100);
-        } while (Math.abs(x - lastX) > jumpHeight || Math.abs(y - lastY) > jumpHeight);
+            x = lastX + Math.random() * 50 - 25; // Ensure closer proximity
+            y = lastY - (Math.random() * (jumpHeight / 2)) - 20; // Ensure jumpable distance
+        } while (x < 0 || x > canvas.width - 50 || y < 0 || y > canvas.height - 100);
 
         const obstacle = {
             x: x,
