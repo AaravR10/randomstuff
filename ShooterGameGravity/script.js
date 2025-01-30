@@ -1,9 +1,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const gravity = 0.1;
-const player1 = { x: 50, y: 50, width: 20, height: 20, color: 'blue', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: '' };
-const player2 = { x: 730, y: 50, width: 20, height: 20, color: 'red', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: '' };
+const gravity = 1; // Increased gravity speed
+const player1 = { x: 50, y: 580, width: 20, height: 20, color: 'blue', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: 'right' };
+const player2 = { x: 730, y: 580, width: 20, height: 20, color: 'red', health: 100, direction: '', shoot: false, reloadTime: 0, bulletDirection: 'left' };
 const bullets = [];
 const powerUps = [];
 const obstacles = [];
@@ -19,7 +19,7 @@ function drawRect(obj) {
 
 function createBullet(player) {
     if (player.reloadTime <= 0) {
-        bullets.push({ x: player.x + player.width / 2, y: player.y + player.height / 2, width: 5, height: 5, color: player.color, direction: player.bulletDirection });
+        bullets.push({ x: player.x + (player.bulletDirection === 'right' ? player.width : 0), y: player.y + player.height / 2, width: 5, height: 5, color: player.color, direction: player.bulletDirection });
         player.reloadTime = 20; // Example reload time
     }
 }
@@ -29,15 +29,17 @@ function createPowerUp() {
     const colors = ['green', 'yellow', 'purple'];
     const type = types[Math.floor(Math.random() * types.length)];
     const color = colors[types.indexOf(type)];
-    powerUps.push({ x: Math.random() * (canvas.width - 20), y: Math.random() * (canvas.height - 20), width: 20, height: 20, color, type, spawnTime: Date.now() });
+    powerUps.push({ x: Math.random() * (canvas.width - 20), y: canvas.height - (Math.random() * 100 + 50), width: 20, height: 20, color, type, spawnTime: Date.now() });
 }
 
 function createObstacle() {
-    obstacles.push({ x: Math.random() * (canvas.width - 30), y: Math.random() * (canvas.height - 30), width: 30, height: 30, color: 'gray' });
+    obstacles.push({ x: Math.random() * (canvas.width - 30), y: canvas.height - (Math.random() * 100 + 50), width: 30, height: 30, color: 'gray' });
 }
 
 function applyGravity(player) {
-    player.y += gravity;
+    if (player.y + player.height < canvas.height) {
+        player.y += gravity;
+    }
 }
 
 function checkCollision(obj1, obj2) {
